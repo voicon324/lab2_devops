@@ -1,0 +1,170 @@
+# Authorization Policies - Control service-to-service access
+# These policies define which services can communicate with each other
+
+# Deny all traffic by default in the namespace
+# This creates a "default deny" security posture
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: deny-all
+  namespace: petclinic
+spec:
+  {}
+---
+# Allow API Gateway to access backend services
+# API Gateway is the entry point and needs access to all backend services
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: allow-api-gateway-to-services
+  namespace: petclinic
+spec:
+  selector:
+    matchLabels:
+      app: customers-service
+  action: ALLOW
+  rules:
+  - from:
+    - source:
+        principals:
+        - "cluster.local/ns/petclinic/sa/default"
+    - source:
+        namespaces:
+        - "petclinic"
+    to:
+    - operation:
+        methods: ["GET", "POST", "PUT", "DELETE"]
+---
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: allow-api-gateway-to-visits
+  namespace: petclinic
+spec:
+  selector:
+    matchLabels:
+      app: visits-service
+  action: ALLOW
+  rules:
+  - from:
+    - source:
+        principals:
+        - "cluster.local/ns/petclinic/sa/default"
+    - source:
+        namespaces:
+        - "petclinic"
+    to:
+    - operation:
+        methods: ["GET", "POST", "PUT", "DELETE"]
+---
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: allow-api-gateway-to-vets
+  namespace: petclinic
+spec:
+  selector:
+    matchLabels:
+      app: vets-service
+  action: ALLOW
+  rules:
+  - from:
+    - source:
+        principals:
+        - "cluster.local/ns/petclinic/sa/default"
+    - source:
+        namespaces:
+        - "petclinic"
+    to:
+    - operation:
+        methods: ["GET", "POST", "PUT", "DELETE"]
+---
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: allow-api-gateway-to-genai
+  namespace: petclinic
+spec:
+  selector:
+    matchLabels:
+      app: genai-service
+  action: ALLOW
+  rules:
+  - from:
+    - source:
+        principals:
+        - "cluster.local/ns/petclinic/sa/default"
+    - source:
+        namespaces:
+        - "petclinic"
+    to:
+    - operation:
+        methods: ["GET", "POST", "PUT", "DELETE"]
+---
+# Allow all services to access Config Server
+# All microservices need to fetch configuration
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: allow-config-server-access
+  namespace: petclinic
+spec:
+  selector:
+    matchLabels:
+      app: config-server
+  action: ALLOW
+  rules:
+  - from:
+    - source:
+        namespaces:
+        - "petclinic"
+    to:
+    - operation:
+        methods: ["GET"]
+        paths: ["/*"]
+---
+# Allow all services to access Discovery Server (Eureka)
+# All microservices need to register and discover other services
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: allow-discovery-server-access
+  namespace: petclinic
+spec:
+  selector:
+    matchLabels:
+      app: discovery-server
+  action: ALLOW
+  rules:
+  - from:
+    - source:
+        namespaces:
+        - "petclinic"
+    to:
+    - operation:
+        methods: ["GET", "POST", "PUT", "DELETE"]
+---
+# Allow external traffic to API Gateway
+# This enables ingress traffic from outside the mesh
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: allow-ingress-to-gateway
+  namespace: petclinic
+spec:
+  selector:
+    matchLabels:
+      app: api-gateway
+  action: ALLOW
+  rules:
+  - from:
+    - source:
+        namespaces:
+        - "istio-system"
+        - "petclinic"
+    to:
+    - operation:
+        methods: ["GET", "POST", "PUT", "DELETE"]
+  - to:
+    - operation:
+        methods: ["GET", "POST", "PUT", "DELETE"]

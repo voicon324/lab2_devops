@@ -1,0 +1,25 @@
+# Peer Authentication - Enable mTLS for petclinic namespace
+# This enforces mutual TLS authentication between all services in the mesh
+
+apiVersion: security.istio.io/v1beta1
+kind: PeerAuthentication
+metadata:
+  name: default
+  namespace: petclinic
+spec:
+  # STRICT mode: Only accept mTLS traffic
+  # PERMISSIVE mode: Accept both plaintext and mTLS traffic (for migration)
+  # DISABLE mode: Disable mTLS
+  mtls:
+    mode: STRICT
+---
+# Optional: Namespace-wide peer authentication for istio-system
+# This ensures all Istio control plane communications are also encrypted
+apiVersion: security.istio.io/v1beta1
+kind: PeerAuthentication
+metadata:
+  name: default
+  namespace: istio-system
+spec:
+  mtls:
+    mode: STRICT

@@ -1,0 +1,353 @@
+Mục tiêu: Hoàn thành cả Service Mesh + DevSecOps, có đủ tài liệu + demo + test plan. 
+
+Dealine:  Chủ Nhật, 4 tháng 1 2026, 11:30 PM 
+
+Shape 
+
+✅ TỔNG QUAN PHÂN CÔNG 
+
+3 người: A, B, C 
+
+3 ngày: Ngày 1 → chuẩn bị & triển khai; Ngày 2 → test & cải tiến; Ngày 3 → hoàn thiện tài liệu + demo. 
+
+Công việc được chia theo thế mạnh: 
+
+A: Service Mesh (Istio, Kiali, mTLS, Authorization, Retry) 
+
+B: DevSecOps (SonarQube, Snyk, ZAP, GitLeaks) 
+
+C: Tổng hợp tài liệu, test, viết README, kiểm thử toàn hệ thống 
+
+Shape 
+
+📅 KẾ HOẠCH LÀM VIỆC CHI TIẾT (3 NGÀY) 
+
+Shape 
+
+🟦 NGÀY 1 — Triển khai hệ thống & cấu hình ban đầu (01/01/2026) 
+
+👤 A — Service Mesh : Khánh Duy  
+
+Nhiệm vụ: 
+
+Cài Istio lên K8S cluster. 
+
+Cài Kiali để visualize service mesh. 
+
+Deploy ứng dụng spring-petclinic-microservices. 
+
+Bật mTLS ở namespace hoặc toàn mesh: 
+
+PeerAuthentication 
+
+DestinationRule 
+
+Chuẩn bị các YAML để: 
+
+mTLS 
+
+AuthorizationPolicy (service A được phép call B…) 
+
+VirtualService (cấu hình retry & timeout) 
+
+Kết quả Ngày 1: 
+
+Istio + Kiali chạy OK 
+
+App PetClinic chạy trong mesh 
+
+mTLS bật thành công 
+
+Có sơ bộ YAML cấu hình (chưa test) 
+
+Shape 
+
+👤 B — DevSecOps: Giáp 
+
+Nhiệm vụ: 
+
+Setup SonarQube (Docker hoặc server có sẵn). 
+
+Thêm bước SonarScanner vào Jenkinsfile hoặc CI pipeline. 
+
+Cài Snyk CLI hoặc dùng integration. 
+
+Chạy thử: 
+
+Sonar scan source code 
+
+Snyk dependency scan 
+
+Kết quả Ngày 1: 
+
+Pipeline chạy SonarQube OK 
+
+Có báo cáo test Sonar & Snyk lần đầu 
+
+Chưa cần đạt chất lượng, chỉ cần hoạt động 
+
+Shape 
+
+👤 C — Tổng hợp & chuẩn bị: Bá Duy  
+
+Nhiệm vụ: 
+
+Đọc tài liệu PetClinic + kiến trúc. 
+
+Vẽ draft Topology diagram (dựa trên repo PetClinic). 
+
+Chuẩn bị: 
+
+Template Test Plan 
+
+Template README 
+
+Template workflow DevSecOps 
+
+Kiểm tra môi trường K8S & CI/CD sẵn sàng. 
+
+Kết quả Ngày 1: 
+
+Có sơ đồ kiến trúc ban đầu 
+
+Template tài liệu (Test plan, README, báo cáo) 
+
+Môi trường đã chuẩn bị sẵn 
+
+ 
+
+ 
+
+🟩 NGÀY 2 — Testing, tinh chỉnh, chạy pipeline (02/01/2026) 
+
+👤 A — Service Mesh Testing: Khánh Duy  
+
+Nhiệm vụ: 
+
+Kiểm thử mTLS: 
+
+Tắt sidecar → curl → phải bị từ chối 
+
+Bật sidecar → curl → OK 
+
+Test AuthorizationPolicy: 
+
+Từ service allowed → OK 
+
+Từ service khác → 403 
+
+Test Retry policy: 
+
+Giả lập backend trả 500 
+
+Quan sát retry qua logs Sidecar / Kiali 
+
+Chụp hình chứng minh (flow trong Kiali). 
+
+Kết quả Ngày 2: 
+
+Bộ screenshot đầy đủ 
+
+Log các lệnh curl 
+
+YAML đã hoạt động đúng 
+
+ 
+
+👤 B — DevSecOps Pipeline: Giáp  
+
+Nhiệm vụ: 
+
+Bổ sung OWASP ZAP baseline scan vào pipeline. 
+
+Thu thập report: 
+
+ZAP (HTML/JSON) 
+
+Snyk vulnerabilities 
+
+SonarQube results 
+
+Tích hợp git hooks (gitleaks): 
+
+Pre-commit detect secret 
+
+Demo commit bị chặn 
+
+Kết quả Ngày 2: 
+
+CI/CD chạy full DevSecOps pipeline 
+
+Có đủ report SAST + SCA + DAST + treo secret 
+
+ 
+
+👤 C — Tài liệu & Test: Bá Duy 
+
+Nhiệm vụ: 
+
+Viết Test Plan: 
+
+mTLS test 
+
+Authorization test 
+
+Retry test 
+
+CI security checks 
+
+Bắt đầu viết README: 
+
+Cách cài Istio 
+
+Cách chạy pipeline DevSecOps 
+
+Kiểm thử độc lập: 
+
+Lặp lại lệnh curl 
+
+Chạy pipeline nhân bản để xác nhận kết quả giống nhau 
+
+Kết quả Ngày 2: 
+
+Test plan 80% 
+
+README 70% 
+
+Kết quả kiểm thử độc lập 
+
+ 
+
+ 
+
+🟥 NGÀY 3 — Hoàn thiện tài liệu & demo (03/01/2026) 
+
+👤 A — Hoàn thiện Service Mesh: Khánh Duy 
+
+Nhiệm vụ: 
+
+Viết giải thích: 
+
+mTLS nguyên lý 
+
+AuthorizationPolicy hoạt động như thế nào 
+
+Retry flow 
+
+Hoàn thiện sơ đồ: 
+
+Mesh Topology từ Kiali 
+
+Request flow 
+
+Chuẩn bị phần trình bày trong demo. 
+
+Deliverables: 
+
+Slide Service Mesh 
+
+File YAML cuối cùng 
+
+Ảnh Kiali đẹp, chú thích rõ ràng 
+
+ 
+
+👤 B — Hoàn thiện DevSecOps: Giáp 
+
+Nhiệm vụ: 
+
+Tổng hợp ảnh report: 
+
+Sonar 
+
+Snyk 
+
+ZAP 
+
+GitLeaks 
+
+Viết giải thích: 
+
+Vai trò từng công cụ 
+
+CI/CD pipeline flow 
+
+Chính sách fail build 
+
+Deliverables: 
+
+Slide DevSecOps 
+
+Jenkinsfile/CI script 
+
+Tài liệu sử dụng tools 
+
+ 
+
+👤 C — Tổng hợp tài liệu chung: Bá Duy 
+
+Nhiệm vụ: 
+
+Merge tài liệu A + B thành bộ hoàn chỉnh: 
+
+Workshop guide 
+
+README 
+
+Test plan 
+
+Screenshots 
+
+Viết Acceptance Criteria chuẩn theo tài liệu 
+
+Chuẩn bị script demo (chạy trong 10–15 phút) 
+
+Deliverables: 
+
+README hoàn chỉnh 
+
+Test Plan hoàn chỉnh 
+
+Slide tổng kết nhóm 
+
+ 
+
+🎉 KẾT QUẢ CUỐI CÙNG (End Deliverables) 
+
+Service Mesh (Istio) 
+
+mTLS YAML 
+
+AuthorizationPolicy YAML 
+
+Retry VirtualService YAML 
+
+Kiali topology screenshots 
+
+Test logs (curl, retry…) 
+
+DevSecOps 
+
+Jenkins pipeline 
+
+SonarQube scan report 
+
+Snyk report 
+
+ZAP report 
+
+GitLeaks hook + demo 
+
+Tài liệu 
+
+README (full setup + hướng dẫn) 
+
+Test Plan 
+
+Slide demo 
+
+ 
+
+Nếu bạn muốn, mình có thể tạo bảng Gantt, hoặc chia lại theo vai trò DevOps – Security – Platform, hoặc tối ưu thêm tùy theo số giờ mỗi ngày. 
+
+ 

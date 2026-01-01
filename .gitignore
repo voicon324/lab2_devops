@@ -1,0 +1,39 @@
+# Istio downloaded files
+istio-*/
+
+# Test logs
+k8s/scripts/test-logs/
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Maven
+target/
+*.jar
+*.war
+
+# Minikube
+minikube-linux-amd64
+
+# Node
+node_modules/
+
+# Python
+__pycache__/
+*.pyc
+.env
+
+# Logs
+*.log
+logs/
+
+# Temp
+*.tmp
+*.temp
+spring-petclinic-microservices/
