@@ -183,7 +183,8 @@ services:
       - sonarqube_db_data:/var/lib/postgresql/data
 
   jenkins:
-    image: jenkins/jenkins:lts
+    build:
+      context: ./Jenkins
     container_name: jenkins
     ports:
       - 8085:8080
