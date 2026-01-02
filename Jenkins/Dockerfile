@@ -2,5 +2,6 @@ FROM jenkins/jenkins:lts
 USER root
 RUN apt-get update && \
     apt-get install -y npm docker.io && \
-    npm install -g snyk
+    npm install -g snyk && \
+    chmod 666 /var/run/docker.sock || true
 USER jenkins
