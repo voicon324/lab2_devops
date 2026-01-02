@@ -2,7 +2,7 @@ pipeline {
     agent any
     environment {
         SONAR_PROJECT_KEY = 'spring-petclinic-microservices'
-        SONAR_HOST_URL = 'http://localhost:9000'
+        SONAR_HOST_URL = 'http://sonarqube:9000'
         SONAR_TOKEN = credentials('SONAR_TOKEN_ID')
     }
     stages {
