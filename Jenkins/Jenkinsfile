@@ -32,6 +32,16 @@ pipeline {
                 }
             }
         }
+
+        stage('OWASP ZAP Baseline Scan') {
+            steps {
+                sh '''
+                    docker run --rm -v $(pwd):/zap/wrk:rw -t owasp/zap2docker-stable zap-baseline.py \
+                    -t http://api-gateway:8080 \
+                    -r zap-report.html -J zap-report.json
+                '''
+            }
+        }
         // Thêm các stage khác nếu cần
     }
 }
