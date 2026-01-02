@@ -1,0 +1,28 @@
+pipeline {
+    agent any
+    environment {
+        SONAR_PROJECT_KEY = 'spring-petclinic-microservices'
+        SONAR_HOST_URL = 'http://localhost:9000'
+        SONAR_TOKEN = credentials('SONAR_TOKEN_ID')
+    }
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+        stage('Build') {
+            steps {
+                sh './mvnw clean install -DskipTests'
+            }
+        }
+        stage('SonarQube Analysis') {
+            steps {
+                withSonarQubeEnv('SonarQube') {
+                    sh "./mvnw sonar:sonar -Dsonar.projectKey=${SONAR_PROJECT_KEY} -Dsonar.host.url=${SONAR_HOST_URL} -Dsonar.login=${SONAR_TOKEN}"
+                }
+            }
+        }
+        // Thêm các stage khác nếu cần
+    }
+}
