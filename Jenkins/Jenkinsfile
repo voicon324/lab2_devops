@@ -34,50 +34,31 @@ pipeline {
         }
 
         stage('OWASP ZAP Baseline Scan') {
-            steps {
-                script {
-                    def zapOutput = sh(script: '''
-                        docker run --rm --user 0 --network spring-petclinic-microservices_default \
-                            -v $PWD:/zap/wrk:rw -t zaproxy/zap-stable zap-baseline.py \
-                            -t http://api-gateway:8080 -m 100
-                    ''', returnStdout: true, returnStatus: false)
-                    
-                    // Tạo HTML từ output
-                    writeFile file: 'zap-report.html', text: """
-        <!DOCTYPE html>
-        <html>
-        <head>
-            <title>ZAP Baseline Scan Report</title>
-            <style>
-                body { font-family: Arial, sans-serif; margin: 20px; }
-                h1 { color: #333; }
-                .pass { color: green; }
-                .warn { color: orange; }
-                .fail { color: red; }
-                pre { background: #f4f4f4; padding: 10px; border-radius: 5px; }
-            </style>
-        </head>
-        <body>
-            <h1>OWASP ZAP Baseline Scan Report</h1>
-            <h2>Target: http://api-gateway:8080</h2>
-            <pre>${zapOutput}</pre>
-        </body>
-        </html>
-        """
-                }
-                
-                archiveArtifacts artifacts: 'zap-report.html', allowEmptyArchive: true
-                
-                publishHTML([
-                    allowMissing: false,
-                    alwaysLinkToLastBuild: true,
-                    keepAll: true,
-                    reportDir: '.',
-                    reportFiles: 'zap-report.html',
-                    reportName: 'ZAP Security Report'
-                ])
-            }
-        }
+    steps {
+        sh '''
+            echo "=== Before scan ==="
+            ls -la
+            
+            docker run --rm --user 0 --network spring-petclinic-microservices_default \
+                -v $PWD:/zap/wrk:rw -t zaproxy/zap-stable zap-baseline.py \
+                -t http://api-gateway:8080 \
+                -r zap-report.html \
+                -I
+            
+            echo "=== After scan ==="
+            ls -la
+            
+            if [ -f zap-report.html ]; then
+                echo "Report found!"
+                cat zap-report.html | head -20
+            else
+                echo "Report NOT found!"
+            fi
+        '''
+        
+        archiveArtifacts artifacts: 'zap-report.html', allowEmptyArchive: true
+    }
+}
         // Thêm các stage khác nếu cần
     }
 }
