@@ -37,7 +37,7 @@ pipeline {
             steps {
                 sh(script: '''
                     docker run --rm --user 0 --network spring-petclinic-microservices_default \
-                        -v $(pwd):/zap/wrk:rw -t zaproxy/zap-stable zap-baseline.py \
+                        -v $PWD:/zap/wrk:rw -t zaproxy/zap-stable zap-baseline.py \
                         -t http://api-gateway:8080 \
                         -r zap-report.html -J zap-report.json -m 100
                 ''', returnStatus: true)
