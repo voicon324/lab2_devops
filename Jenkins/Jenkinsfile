@@ -35,11 +35,12 @@ pipeline {
 
         stage('OWASP ZAP Baseline Scan') {
             steps {
-                script {
-                    def zapContainerId = sh(script: 'docker run -d --user 0 --network spring-petclinic-microservices_default zaproxy/zap-stable zap-baseline.py -t http://api-gateway:8080 -r zap-report.html -m 100', returnStdout: true).trim()
-                    sh "docker cp ${zapContainerId}:/zap/wrk/zap-report.html ./zap-report.html"
-                    sh "docker rm -f ${zapContainerId}"
-                }
+                sh(script: '''
+                    docker run --rm --user 0 --network spring-petclinic-microservices_default \
+                        -v $PWD:/zap/wrk:rw -t zaproxy/zap-stable zap-baseline.py \
+                        -t http://api-gateway:8080 \
+                        -r zap-report.html -m 100
+                ''', returnStatus: true)
                 archiveArtifacts artifacts: 'zap-report.html', allowEmptyArchive: true
             }
         }
