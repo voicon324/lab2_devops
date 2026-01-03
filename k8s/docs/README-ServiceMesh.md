@@ -408,11 +408,42 @@ kubectl port-forward svc/prometheus -n istio-system 9090:9090
 
 ---
 
+## Known Issues
+
+### Kiali hiển thị mũi tên đỏ tới Discovery Server
+
+**Hiện tượng:** Trong Kiali dashboard, các kết nối từ services đến `discovery-server` hiển thị màu đỏ với ~50% error rate.
+
+**Nguyên nhân:** 
+- Spring Cloud Netflix Eureka client sử dụng **Apache HttpClient 5.x**
+- HttpClient 5.x gửi header `Upgrade: h2c` để yêu cầu nâng cấp HTTP/1.1 → HTTP/2
+- Istio Envoy **từ chối** header `Upgrade` không mong muốn vì lý do bảo mật
+- Kết quả: `GET /eureka/apps/` trả về **403 upgrade_failed**
+
+**Tác động:**
+- ❌ Kiali hiển thị đỏ (cosmetic issue)
+- ✅ mTLS vẫn hoạt động bình thường
+- ✅ Authorization Policy vẫn hoạt động
+- ✅ Service discovery vẫn hoạt động (PUT/POST requests thành công)
+
+**Giải pháp:**
+Đây là known incompatibility giữa Apache HttpClient 5.x và Istio. Các giải pháp có thể:
+1. **Chấp nhận** và giải thích trong báo cáo (khuyến nghị)
+2. Sử dụng `spring-petclinic-istio` version không có Eureka
+3. Cấu hình HttpClient để disable protocol upgrade (cần rebuild app)
+
+**Tham khảo:**
+- [Apache HttpClient 5.x Upgrade Header Issue](https://github.com/apache/httpcomponents-client/issues/369)
+- [Istio upgrade_failed response flag](https://www.envoyproxy.io/docs/envoy/latest/configuration/http/http_conn_man/response_code_details)
+
+---
+
 ## Tài Liệu Tham Khảo
 
 - [Istio Documentation](https://istio.io/latest/docs/)
 - [Kiali Documentation](https://kiali.io/docs/)
 - [Spring PetClinic Microservices](https://github.com/spring-petclinic/spring-petclinic-microservices)
+- [Spring PetClinic Istio](https://github.com/spring-petclinic/spring-petclinic-istio)
 - [Istio Security](https://istio.io/latest/docs/concepts/security/)
 - [Istio Traffic Management](https://istio.io/latest/docs/concepts/traffic-management/)
 
@@ -420,4 +451,4 @@ kubectl port-forward svc/prometheus -n istio-system 9090:9090
 
 **Author:** A (Khánh Duy)  
 **Date:** 01/01/2026  
-**Version:** 1.0
+**Version:** 1.1 (Updated: 04/01/2026 - Added Known Issues section)

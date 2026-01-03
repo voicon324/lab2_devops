@@ -131,7 +131,7 @@ EOF
     RESULT=$(kubectl exec test-no-sidecar -n $NAMESPACE -- \
         curl -s -o /dev/null -w "%{http_code}" --connect-timeout 5 http://customers-service:8081/actuator/health 2>/dev/null || echo "CONNECTION_REFUSED")
     
-    if [ "$RESULT" == "CONNECTION_REFUSED" ] || [ "$RESULT" == "000" ] || [ "$RESULT" == "56" ]; then
+    if [[ "$RESULT" == *"CONNECTION_REFUSED"* ]] || [[ "$RESULT" == *"000"* ]] || [ "$RESULT" == "56" ]; then
         echo -e "${GREEN}✓ PASS: Plaintext connection was rejected (mTLS enforced)${NC}"
         echo "Plaintext rejection test: PASS" >> "$LOG_DIR/mtls-test.log"
     elif [ "$RESULT" == "503" ]; then

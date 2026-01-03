@@ -57,5 +57,6 @@ spec:
   - port: 8761
     targetPort: 8761
     name: http
+    appProtocol: http
   selector:
     app: discovery-server

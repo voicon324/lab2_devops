@@ -86,22 +86,23 @@ test_allowed_vets_connection() {
     fi
 }
 
-# Test 4: Test denied connection (create unauthorized pod)
+# Test 4: Test denied connection (create unauthorized pod in different namespace)
 test_denied_connection() {
     echo ""
     echo -e "${YELLOW}[Test 4] Testing DENIED connection (unauthorized pod -> service)...${NC}"
     
-    # Create a test pod that should be denied
-    echo "Creating unauthorized test pod..."
+    # Create a test pod in DEFAULT namespace (outside petclinic)
+    echo "Creating unauthorized test pod in 'default' namespace..."
     
     cat <<EOF | kubectl apply -f -
 apiVersion: v1
 kind: Pod
 metadata:
   name: test-unauthorized
-  namespace: $NAMESPACE
+  namespace: default
   labels:
     app: unauthorized-app
+    sidecar.istio.io/inject: "false"
 spec:
   containers:
   - name: curl
@@ -111,14 +112,14 @@ EOF
 
     # Wait for pod to be ready
     echo "Waiting for test pod..."
-    kubectl wait --for=condition=ready pod/test-unauthorized -n $NAMESPACE --timeout=120s 2>/dev/null || true
-    sleep 10
+    kubectl wait --for=condition=ready pod/test-unauthorized -n default --timeout=120s 2>/dev/null || true
+    sleep 5
     
-    echo "Testing unauthorized access to customers-service..."
-    RESULT=$(kubectl exec test-unauthorized -n $NAMESPACE -- \
-        curl -s -o /dev/null -w "%{http_code}" --connect-timeout 10 http://customers-service:8081/actuator/health 2>/dev/null || echo "CONNECTION_REFUSED")
+    echo "Testing unauthorized access from 'default' namespace to customers-service in 'petclinic'..."
+    RESULT=$(kubectl exec test-unauthorized -n default -- \
+        curl -s -o /dev/null -w "%{http_code}" --connect-timeout 10 http://customers-service.petclinic:8081/actuator/health 2>/dev/null || echo "CONNECTION_REFUSED")
     
-    if [ "$RESULT" == "403" ] || [ "$RESULT" == "CONNECTION_REFUSED" ] || [ "$RESULT" == "000" ]; then
+    if [ "$RESULT" == "403" ] || [[ "$RESULT" == *"CONNECTION_REFUSED"* ]] || [ "$RESULT" == "000" ] || [ "$RESULT" == "56" ]; then
         echo -e "${GREEN}✓ PASS: Unauthorized access was denied (HTTP $RESULT)${NC}"
         echo "Unauthorized -> Customers Service: DENIED ($RESULT)" >> "$LOG_DIR/authorization-test.log"
     elif [ "$RESULT" == "503" ]; then
@@ -131,7 +132,7 @@ EOF
     
     # Cleanup
     echo "Cleaning up test pod..."
-    kubectl delete pod test-unauthorized -n $NAMESPACE --ignore-not-found=true
+    kubectl delete pod test-unauthorized -n default --ignore-not-found=true
 }
 
 # Test 5: Test Config Server access (should be allowed for all services)

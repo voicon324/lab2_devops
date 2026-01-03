@@ -16,7 +16,6 @@ spec:
       tcp:
         maxConnections: 100
       http:
-        h2UpgradePolicy: UPGRADE
         http1MaxPendingRequests: 100
         http2MaxRequests: 1000
 ---
@@ -31,13 +30,6 @@ spec:
   trafficPolicy:
     tls:
       mode: ISTIO_MUTUAL
-    connectionPool:
-      tcp:
-        maxConnections: 100
-      http:
-        h2UpgradePolicy: UPGRADE
-        http1MaxPendingRequests: 100
-        http2MaxRequests: 1000
 ---
 # API Gateway
 apiVersion: networking.istio.io/v1beta1
@@ -54,7 +46,6 @@ spec:
       tcp:
         maxConnections: 100
       http:
-        h2UpgradePolicy: UPGRADE
         http1MaxPendingRequests: 100
         http2MaxRequests: 1000
 ---
@@ -73,7 +64,6 @@ spec:
       tcp:
         maxConnections: 100
       http:
-        h2UpgradePolicy: UPGRADE
         http1MaxPendingRequests: 100
         http2MaxRequests: 1000
 ---
@@ -92,7 +82,6 @@ spec:
       tcp:
         maxConnections: 100
       http:
-        h2UpgradePolicy: UPGRADE
         http1MaxPendingRequests: 100
         http2MaxRequests: 1000
 ---
@@ -111,7 +100,6 @@ spec:
       tcp:
         maxConnections: 100
       http:
-        h2UpgradePolicy: UPGRADE
         http1MaxPendingRequests: 100
         http2MaxRequests: 1000
 ---
@@ -130,6 +118,5 @@ spec:
       tcp:
         maxConnections: 100
       http:
-        h2UpgradePolicy: UPGRADE
         http1MaxPendingRequests: 100
         http2MaxRequests: 1000
