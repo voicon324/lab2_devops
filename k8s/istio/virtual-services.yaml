@@ -1,0 +1,149 @@
+# Virtual Services - Configure retry policies and timeouts
+# These rules define how Istio should handle failed requests
+
+# Customers Service - Retry on 5xx errors
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: customers-service
+  namespace: petclinic
+spec:
+  hosts:
+  - customers-service
+  http:
+  - route:
+    - destination:
+        host: customers-service
+        port:
+          number: 8081
+    timeout: 10s
+    retries:
+      attempts: 3
+      perTryTimeout: 3s
+      retryOn: 5xx,reset,connect-failure,retriable-4xx
+---
+# Visits Service - Retry on 5xx errors
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: visits-service
+  namespace: petclinic
+spec:
+  hosts:
+  - visits-service
+  http:
+  - route:
+    - destination:
+        host: visits-service
+        port:
+          number: 8082
+    timeout: 10s
+    retries:
+      attempts: 3
+      perTryTimeout: 3s
+      retryOn: 5xx,reset,connect-failure,retriable-4xx
+---
+# Vets Service - Retry on 5xx errors
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: vets-service
+  namespace: petclinic
+spec:
+  hosts:
+  - vets-service
+  http:
+  - route:
+    - destination:
+        host: vets-service
+        port:
+          number: 8083
+    timeout: 10s
+    retries:
+      attempts: 3
+      perTryTimeout: 3s
+      retryOn: 5xx,reset,connect-failure,retriable-4xx
+---
+# GenAI Service - Retry on 5xx errors (longer timeout for AI calls)
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: genai-service
+  namespace: petclinic
+spec:
+  hosts:
+  - genai-service
+  http:
+  - route:
+    - destination:
+        host: genai-service
+        port:
+          number: 8084
+    timeout: 30s
+    retries:
+      attempts: 3
+      perTryTimeout: 10s
+      retryOn: 5xx,reset,connect-failure,retriable-4xx
+---
+# Config Server - Retry on 5xx errors
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: config-server
+  namespace: petclinic
+spec:
+  hosts:
+  - config-server
+  http:
+  - route:
+    - destination:
+        host: config-server
+        port:
+          number: 8888
+    timeout: 10s
+    retries:
+      attempts: 5
+      perTryTimeout: 3s
+      retryOn: 5xx,reset,connect-failure,retriable-4xx
+---
+# Discovery Server - Retry on 5xx errors
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: discovery-server
+  namespace: petclinic
+spec:
+  hosts:
+  - discovery-server
+  http:
+  - route:
+    - destination:
+        host: discovery-server
+        port:
+          number: 8761
+    timeout: 10s
+    retries:
+      attempts: 5
+      perTryTimeout: 3s
+      retryOn: 5xx,reset,connect-failure,retriable-4xx
+---
+# API Gateway - Entry point with retry
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: api-gateway
+  namespace: petclinic
+spec:
+  hosts:
+  - api-gateway
+  http:
+  - route:
+    - destination:
+        host: api-gateway
+        port:
+          number: 8080
+    timeout: 30s
+    retries:
+      attempts: 3
+      perTryTimeout: 10s
+      retryOn: 5xx,reset,connect-failure,retriable-4xx
