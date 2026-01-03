@@ -3,7 +3,7 @@
 # Author: A (Khánh Duy)
 # Date: 01/01/2026
 
-set -e
+# set -e
 
 echo "=========================================="
 echo "  RETRY POLICY TESTING SCRIPT"
