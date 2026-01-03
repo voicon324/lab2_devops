@@ -41,6 +41,7 @@ pipeline {
                         -t http://api-gateway:8080 \
                         -r zap-report.html -J zap-report.json -m 100
                 ''', returnStatus: true)
+                archiveArtifacts artifacts: 'zap-report.*', allowEmptyArchive: true
             }
         }
         // Thêm các stage khác nếu cần
