@@ -3,7 +3,7 @@
 ## 1. Các bước đã thực hiện
 
 ### Prerequisite
-- Đã cài docker desktop
+- Đã cài docker desktop, mvn 
 - Trong docker-compose.yml, thêm image của sonarqube, Jenkins, OWASP:
     ```sh
     sonarqube:
@@ -53,7 +53,7 @@
     jenkins_home:
    ```
 - Tạo Jenkins folder:
-    - Tạo Jenkinsfile, thêm stage cho checkout, build, SonarQube, Snyk, OWASP:
+    - Tạo Jenkinsfile, thêm stage cho checkout, build, SonarQube, Snyk, OWASP(chỉ scan spring-petclinic-api-gateway):
         ```sh
         pipeline {
             agent any
@@ -85,7 +85,7 @@
                     steps {
                         withCredentials([string(credentialsId: 'SNYK_TOKEN', variable: 'SNYK_TOKEN')]) {
                             sh 'snyk auth $SNYK_TOKEN'
-                            sh 'snyk test'
+                            sh 'snyk test --all-projects'
                         }
                     }
                 }
@@ -243,5 +243,10 @@
 ## 4. Thực hiện quy trình CI/CD trên Jenkins
 - Chỉ cần commit mới là oke
 - Đối với Snyk scan dependency có lỗ hổng, hãy thử thêm dependency có lỗ hổng vào file Pom trong spring-petclinic bất kì
+
+## 5. Ouput
+- Đối với SonarQube, truy cập: http://sonarqube:9000 để xem status và các thông báo
+- Đối với SNYK, xem trên Console output của Jenkins
+- Đối với OWASP report, xem trên Status của Jenkins, file name: zap-report.html
 ---
 Tài liệu này giúp bạn hiểu toàn bộ quy trình DevSecOps đã thực hiện và cách vận hành lại từ đầu, cả tự động (Jenkins) lẫn thủ công (terminal).
